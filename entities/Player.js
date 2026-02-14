@@ -46,52 +46,57 @@ export default class Player {
     };
   }
 
-  isPlayerColliding() {
-    const player = this.getHitbox();
+  checkAllCollisions() {
+    this.collisions = {
+      left: false,
+      right: false,
+      up: false,
+      down: false,
+    };
 
-    this.collisions.left = false;
-    this.collisions.right = false;
-    this.collisions.up = false;
-    this.collisions.down = false;
+    this.game.entities.forEach((entity) => {
+      let collisionInfo = this.utils.checkCollision(
+        entity.getHitbox(),
+        this.getHitbox(),
+      );
 
-    for (const entity of this.game.entities) {
-      if (!entity.solid) continue;
-      if (entity === this) continue;
-
-      const other = entity.getHitbox();
-
-      if (!this.utils.checkCollision(player, other)) continue;
-
-      const dx = player.x + player.width / 2 - (other.x + other.width / 2);
-      const dy = player.y + player.height / 2 - (other.y + other.height / 2);
-
-      const overlapX = player.width / 2 + other.width / 2 - Math.abs(dx);
-      const overlapY = player.height / 2 + other.height / 2 - Math.abs(dy);
-
-      if (overlapX < overlapY) {
-        if (dx > 0) {
-          this.collisions.left = true;
-        } else {
-          this.collisions.right = true;
-        }
-      } else {
-        if (dy > 0) {
-          this.collisions.up = true;
-        } else {
-          this.collisions.down = true;
-          this.onGround = true;
-          this.vy = 0;
-        }
+      if (collisionInfo.collision) {
+        if (collisionInfo.direction === "down") this.onGround = true;
+        this.collisions[collisionInfo.direction] = true;
       }
+    });
+  }
 
-      return entity;
+  jump() {
+    this.vy = -this.jumpForce;
+    this.onGround = false;
+  }
+
+  applyGravityPhysics(delta) {
+    this.vy += this.game.gravity * delta;
+    this.y += this.vy * delta;
+  }
+
+  walkAnimation(delta) {
+    if (this.frameTimer > this.frameInterval) {
+      this.frameX++;
+      if (this.frameX > this.maxFrame) this.frameX = 0;
+      this.frameTimer = 0;
+    } else {
+      this.frameTimer += delta * 1000;
     }
-
-    return null;
   }
 
   update(delta) {
-    this.isPlayerColliding();
+    if (this.input.keys["Space"] && this.onGround) {
+      this.jump();
+    }
+
+    if (!this.collisions.down || this.input.keys["Space"]) {
+      this.applyGravityPhysics(delta);
+    }
+
+    this.checkAllCollisions();
 
     if (this.input.keys["ArrowRight"] && !this.collisions.right) {
       this.facing = 1;
@@ -101,31 +106,14 @@ export default class Player {
       this.x -= this.speed * delta;
     }
 
-    if (!this.onGround) {
-      this.vy += this.game.gravity * delta;
-      this.y += this.vy * delta;
-    }
-
     if (this.utils.checkCollision(this.getHitbox(), this.game.ground)) {
       this.onGround = true;
       this.vy = 0;
       this.y = this.game.ground.y - this.height;
-    } else {
-      this.onGround = false;
-    }
-
-    if (this.input.keys["Space"]) {
-      this.vy = -this.jumpForce;
     }
 
     if (this.input.keys["ArrowRight"] || this.input.keys["ArrowLeft"]) {
-      if (this.frameTimer > this.frameInterval) {
-        this.frameX++;
-        if (this.frameX > this.maxFrame) this.frameX = 0;
-        this.frameTimer = 0;
-      } else {
-        this.frameTimer += delta * 1000;
-      }
+      this.walkAnimation(delta);
     }
   }
 

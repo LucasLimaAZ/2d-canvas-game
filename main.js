@@ -34,7 +34,7 @@ class Game {
     this.utils.placeEntityOnMap(new Eye(this, 600, this.floorY));
     this.utils.placeEntityOnMap(new Eye(this, 1200, this.floorY));
     this.utils.placeEntityOnMap(new Eye(this, 2000, this.floorY));
-    this.utils.placeEntityOnMap(new Rock(this, 300, this.floorY));
+    this.utils.placeEntityOnMap(new Rock(this, 100, this.floorY));
 
     this.utils.placeUiElement(
       `Planet: ${this.planetName} | Gravity: ${this.gravity / 10}%`,
