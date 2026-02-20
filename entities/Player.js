@@ -1,5 +1,6 @@
 import Input from "../core/Input.js";
 import Utils from "../core/Utils.js";
+import Projectile from "./Projectile.js";
 
 export default class Player {
   constructor(game) {
@@ -9,31 +10,33 @@ export default class Player {
     this.width = 64;
     this.height = 64;
     this.speed = 200;
+
     this.frameX = 1;
     this.frameY = 0;
     this.maxFrame = 3;
     this.fps = 8;
     this.frameTimer = 0;
     this.frameInterval = 1000 / this.fps;
+
     this.facing = 1;
     this.vy = 0;
     this.jumpForce = 350;
     this.onGround = false;
+
     this.input = new Input();
-    this.utils = new Utils(game);
+
     this.playerSprite = new Image();
     this.playerSprite.src = "assets/sprites/player-sheet.png";
+
+    this.projectile = new Projectile();
+    this.shootCoolDown = 0;
+    this.shootCoolDownTime = 250;
+
     this.hitbox = {
       offsetX: 10,
       offsetY: 0,
       width: 44,
       height: 64,
-    };
-    this.collisions = {
-      left: false,
-      right: false,
-      up: false,
-      down: false,
     };
   }
 
@@ -46,35 +49,20 @@ export default class Player {
     };
   }
 
-  checkAllCollisions() {
-    this.collisions = {
-      left: false,
-      right: false,
-      up: false,
-      down: false,
-    };
-
-    this.game.entities.forEach((entity) => {
-      let collisionInfo = this.utils.checkCollision(
-        entity.getHitbox(),
-        this.getHitbox(),
-      );
-
-      if (collisionInfo.collision) {
-        if (collisionInfo.direction === "down") this.onGround = true;
-        this.collisions[collisionInfo.direction] = true;
-      }
-    });
-  }
-
   jump() {
     this.vy = -this.jumpForce;
     this.onGround = false;
   }
 
-  applyGravityPhysics(delta) {
-    this.vy += this.game.gravity * delta;
-    this.y += this.vy * delta;
+  shoot() {
+    const projectile = new Projectile(
+      this.game,
+      this.x + this.width / 2,
+      this.y + this.height / 1.5,
+      this.facing,
+    );
+
+    this.game.utils.placeEntityOnMap(projectile);
   }
 
   walkAnimation(delta) {
@@ -87,33 +75,89 @@ export default class Player {
     }
   }
 
+  moveHorizontal(delta) {
+    let moveX = 0;
+
+    if (this.input.keys["ArrowRight"]) {
+      moveX = this.speed * delta;
+      this.facing = 1;
+    }
+
+    if (this.input.keys["ArrowLeft"]) {
+      moveX = -this.speed * delta;
+      this.facing = -1;
+    }
+
+    this.x += moveX;
+
+    this.game.entities.forEach((entity) => {
+      if (!entity.solid) return;
+      const collision = this.game.utils.checkCollision(
+        this.getHitbox(),
+        entity.getHitbox(),
+      );
+
+      if (collision.collision) {
+        const box = entity.getHitbox();
+
+        if (moveX > 0) {
+          this.x = box.x - this.hitbox.width - this.hitbox.offsetX;
+        } else if (moveX < 0) {
+          this.x = box.x + box.width - this.hitbox.offsetX;
+        }
+      }
+    });
+  }
+
+  moveVertical(delta) {
+    this.vy += this.game.gravity * delta;
+    this.y += this.vy * delta;
+
+    this.onGround = false;
+
+    this.game.entities.forEach((entity) => {
+      if (!entity.solid) return;
+      const collision = this.game.utils.checkCollision(
+        this.getHitbox(),
+        entity.getHitbox(),
+      );
+
+      if (collision.collision) {
+        const box = entity.getHitbox();
+
+        if (this.vy > 0) {
+          this.y = box.y - this.hitbox.height;
+          this.vy = 0;
+          this.onGround = true;
+        } else if (this.vy < 0) {
+          this.y = box.y + box.height;
+          this.vy = 0;
+        }
+      }
+    });
+  }
+
   update(delta) {
+    if (this.shootCoolDown > 0) {
+      this.shootCoolDown -= delta * 1000;
+    }
+
     if (this.input.keys["Space"] && this.onGround) {
       this.jump();
     }
 
-    if (!this.collisions.down || this.input.keys["Space"]) {
-      this.applyGravityPhysics(delta);
-    }
-
-    this.checkAllCollisions();
-
-    if (this.input.keys["ArrowRight"] && !this.collisions.right) {
-      this.facing = 1;
-      this.x += this.speed * delta;
-    } else if (this.input.keys["ArrowLeft"] && !this.collisions.left) {
-      this.facing = -1;
-      this.x -= this.speed * delta;
-    }
-
-    if (this.utils.checkCollision(this.getHitbox(), this.game.ground)) {
-      this.onGround = true;
-      this.vy = 0;
-      this.y = this.game.ground.y - this.height;
-    }
+    this.moveHorizontal(delta);
+    this.moveVertical(delta);
 
     if (this.input.keys["ArrowRight"] || this.input.keys["ArrowLeft"]) {
       this.walkAnimation(delta);
+    }
+
+    if (this.input.keys["KeyZ"]) {
+      if (this.shootCoolDown <= 0) {
+        this.shoot();
+        this.shootCoolDown = this.shootCoolDownTime;
+      }
     }
   }
 

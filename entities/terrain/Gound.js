@@ -1,18 +1,27 @@
-export default class Ground {
+import Entity from "../Entity";
+
+export default class Ground extends Entity {
   constructor(game) {
-    this.game = game;
-    this.x = -1000;
-    this.y = 472 + this.game.player.height;
-    this.width = 3000;
-    this.height = 20;
+    const tileSize = 64;
+
+    super(game, -1000, 472 + game.player.height, 3000, tileSize);
+
     this.sprite = new Image();
-    this.tileSize = 64;
+    this.tileSize = tileSize;
     this.sprite.src = "assets/sprites/zamus-1-ground.png";
+
+    this.hitbox = {
+      offsetX: 0,
+      offsetY: 0,
+      width: this.width,
+      height: this.tileSize,
+    };
   }
 
   draw(ctx) {
     for (let i = 0; i < this.width; i += this.tileSize) {
       const screenX = Math.floor(this.x + i - this.game.cameraX);
+
       ctx.drawImage(
         this.sprite,
         0,

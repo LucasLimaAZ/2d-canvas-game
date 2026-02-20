@@ -20,8 +20,8 @@ export default class Entity {
     this.hitbox = {
       offsetX: 0,
       offsetY: 0,
-      width: 64,
-      height: 64,
+      width: this.width,
+      height: this.height,
     };
   }
 
