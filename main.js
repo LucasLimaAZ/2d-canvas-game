@@ -5,6 +5,7 @@ import Utils from "./core/Utils";
 import Rock from "./entities/terrain/Rock";
 import Block from "./entities/Block";
 import Input from "./core/Input";
+import WinFlag from "./entities/WinFlag";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -28,25 +29,41 @@ class Game {
     this.cameraX = 0;
 
     this.initLevel();
+    this.gameState = "playing";
   }
 
   initLevel() {
     const ground = new Ground(this);
     this.entities.push(ground);
 
-    this.utils.placeEntityOnMap(new Eye(this, 600, this.floorY));
+    this.utils.placeEntityOnMap(new Eye(this, 600, this.floorY - 15));
+    this.utils.placeEntityOnMap(new Eye(this, 900, this.floorY - 20));
     this.utils.placeEntityOnMap(new Eye(this, 1200, this.floorY));
-    this.utils.placeEntityOnMap(new Eye(this, 2000, this.floorY));
+    this.utils.placeEntityOnMap(new Eye(this, 1500, this.floorY + 5));
+    this.utils.placeEntityOnMap(new Eye(this, 1900, this.floorY));
 
     this.utils.placeEntityOnMap(new Rock(this, 100, this.floorY));
+    this.utils.placeEntityOnMap(new Rock(this, 800, this.floorY));
+    this.utils.placeEntityOnMap(new Rock(this, 1000, this.floorY));
 
     this.utils.placeEntityOnMap(new Block(this, -300, 0, 32, this.height));
+    this.utils.placeEntityOnMap(new Block(this, 2000, 0, 32, this.height));
+
+    this.utils.placeEntityOnMap(new WinFlag(this, 1400, this.floorY, 64, 64));
 
     this.utils.placeUiElement(
       `Planet: ${this.levelTitle} | Gravity: ${this.gravity / 10}%`,
       "16px Courier New",
       "white",
       20,
+      20,
+    );
+
+    this.utils.placeUiElement(
+      `Arrows: move | Space: jump | Z: shoot`,
+      "16px Courier New",
+      "white",
+      525,
       20,
     );
   }
@@ -63,7 +80,23 @@ class Game {
     this.entities.forEach((entity) => entity.draw(ctx));
   }
 
+  reset() {
+    this.entities = [];
+    this.uiElements = [];
+    this.cameraX = 0;
+
+    this.player = new Player(this, this.input);
+
+    this.initLevel();
+    this.gameState = "playing";
+  }
+
   update(delta) {
+    if (this.gameState !== "playing") {
+      if (this.input.isRestart()) this.reset();
+      return;
+    }
+
     this.player.update(delta);
     this.entities.forEach((entity) => entity.update(delta));
     this.cameraX = this.player.x - this.width * 0.45;

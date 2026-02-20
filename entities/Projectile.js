@@ -15,13 +15,37 @@ export default class Projectile extends Entity {
     this.direction = direction;
     this.vx = this.speed * this.direction;
     this.damage = 1;
-    this.lifeTime = 2;
+    this.lifeTime = 0.4;
     this.solid = false;
+  }
+
+  checkForDestructibleEntity(entity) {
+    if (entity.destructible) {
+      this.game.entities = this.game.entities.filter((e) => e !== entity);
+    }
   }
 
   update(delta) {
     this.x += this.vx * delta;
     this.lifeTime -= delta;
+
+    if (this.lifeTime <= 0) {
+      this.destroy();
+    }
+
+    this.game.entities.forEach((entity) => {
+      if (entity === this) return;
+
+      const collision = this.game.utils.checkCollision(
+        this.getHitbox(),
+        entity.getHitbox(),
+      );
+
+      if (collision.collision) {
+        this.destroy();
+        this.checkForDestructibleEntity(entity);
+      }
+    });
   }
 
   draw(ctx) {

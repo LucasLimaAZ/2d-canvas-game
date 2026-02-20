@@ -20,6 +20,30 @@ export default class Utils {
     return { collision: false };
   }
 
+  gameLoss() {
+    this.placeUiElement("You lost!", "64px Courier New", "white", 275, 275);
+    this.placeUiElement(
+      "Press R to restart.",
+      "16px Courier New",
+      "white",
+      350,
+      310,
+    );
+    this.game.gameState = "lost";
+  }
+
+  gameWin() {
+    this.placeUiElement("You win!", "64px Courier New", "white", 275, 275);
+    this.placeUiElement(
+      "Press R to restart.",
+      "16px Courier New",
+      "white",
+      350,
+      310,
+    );
+    this.game.gameState = "win";
+  }
+
   /**
    * @param {Entity} entity
    */

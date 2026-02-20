@@ -10,5 +10,15 @@ export default class Eye extends Entity {
   constructor(game, x, y) {
     super(game, x, y, 64, 64);
     this.sprite.src = "assets/sprites/enemy.png";
+    this.destructible = true;
+    this.hostile = true;
+    this.autoMovementType = "towards-player";
+    this.speed = 250;
+    this.hitbox = {
+      offsetX: 10,
+      offsetY: 8,
+      width: 44,
+      height: 48,
+    };
   }
 }

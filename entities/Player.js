@@ -24,6 +24,7 @@ export default class Player extends Entity {
 
     this.sprite.src = "assets/sprites/player-sheet.png";
     this.projectile = new Projectile();
+    this.shootSound = new Audio("assets/sounds/shoot.wav");
     this.input = input;
 
     this.shootCoolDown = 0;
@@ -50,6 +51,7 @@ export default class Player extends Entity {
       this.facing,
     );
 
+    this.shootSound.play();
     this.game.utils.placeEntityOnMap(projectile);
   }
 
@@ -60,6 +62,20 @@ export default class Player extends Entity {
       this.frameTimer = 0;
     } else {
       this.frameTimer += delta * 1000;
+    }
+  }
+
+  getCollidingEntity(entity) {
+    if (!entity.solid) return;
+    const collision = this.game.utils.checkCollision(
+      this.getHitbox(),
+      entity.getHitbox(),
+    );
+
+    if (collision.collision) {
+      if (entity.hostile) this.game.utils.gameLoss();
+
+      return entity;
     }
   }
 
@@ -79,13 +95,8 @@ export default class Player extends Entity {
     this.x += moveX;
 
     this.game.entities.forEach((entity) => {
-      if (!entity.solid) return;
-      const collision = this.game.utils.checkCollision(
-        this.getHitbox(),
-        entity.getHitbox(),
-      );
-
-      if (collision.collision) {
+      const collidingEntity = this.getCollidingEntity(entity);
+      if (collidingEntity) {
         const box = entity.getHitbox();
 
         if (moveX > 0) {
@@ -104,13 +115,9 @@ export default class Player extends Entity {
     this.onGround = false;
 
     this.game.entities.forEach((entity) => {
-      if (!entity.solid) return;
-      const collision = this.game.utils.checkCollision(
-        this.getHitbox(),
-        entity.getHitbox(),
-      );
+      const collidingEntity = this.getCollidingEntity(entity);
 
-      if (collision.collision) {
+      if (collidingEntity) {
         const box = entity.getHitbox();
 
         if (this.vy > 0) {

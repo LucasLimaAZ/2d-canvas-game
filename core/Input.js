@@ -26,4 +26,8 @@ export default class Input {
   isShoot() {
     return this.keys["KeyZ"];
   }
+
+  isRestart() {
+    return this.keys["KeyR"];
+  }
 }
