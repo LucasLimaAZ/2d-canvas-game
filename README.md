@@ -69,7 +69,7 @@ style.css
 1. Clone the repository
 2. Open `index.html` in your browser
    or
-3. Use a local server (recommended)
+3. Use a local server (recommended, starting index.html directly may cause CORS issues)
 
 Example with VSCode Live Server:
 
