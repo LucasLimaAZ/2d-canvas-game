@@ -1,6 +1,10 @@
 import Entity from "../Entity";
 
 export default class Ground extends Entity {
+  /**
+   *
+   * @param {Game} game
+   */
   constructor(game) {
     const tileSize = 64;
 

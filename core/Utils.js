@@ -1,4 +1,8 @@
 export default class Utils {
+  /**
+   *
+   * @param {Game} game
+   */
   constructor(game) {
     this.game = game;
   }

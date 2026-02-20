@@ -10,4 +10,20 @@ export default class Input {
       this.keys[e.code] = false;
     });
   }
+
+  isRight() {
+    return this.keys["ArrowRight"];
+  }
+
+  isLeft() {
+    return this.keys["ArrowLeft"];
+  }
+
+  isJump() {
+    return this.keys["Space"];
+  }
+
+  isShoot() {
+    return this.keys["KeyZ"];
+  }
 }

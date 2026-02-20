@@ -1,6 +1,13 @@
 import Entity from "./Entity";
 
 export default class Projectile extends Entity {
+  /**
+   *
+   * @param {Game} game
+   * @param {number} x
+   * @param {number} y
+   * @param {number} direction
+   */
   constructor(game, x, y, direction) {
     super(game, x, y, 12, 4);
 

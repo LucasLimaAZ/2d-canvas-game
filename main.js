@@ -4,6 +4,7 @@ import Eye from "./entities/enemies/Eye";
 import Utils from "./core/Utils";
 import Rock from "./entities/terrain/Rock";
 import Block from "./entities/Block";
+import Input from "./core/Input";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -15,6 +16,8 @@ class Game {
     this.lastTime = 0;
 
     this.utils = new Utils(this);
+    this.input = new Input();
+    this.player = new Player(this, this.input);
 
     this.floorY = 472;
     this.gravity = 400;
@@ -23,8 +26,6 @@ class Game {
     this.entities = [];
     this.uiElements = [];
     this.cameraX = 0;
-
-    this.player = new Player(this);
 
     this.initLevel();
   }

@@ -1,34 +1,31 @@
-import Input from "../core/Input.js";
-import Utils from "../core/Utils.js";
+import Entity from "./Entity.js";
 import Projectile from "./Projectile.js";
 
-export default class Player {
-  constructor(game) {
-    this.game = game;
-    this.x = 20;
-    this.y = 400;
-    this.width = 64;
-    this.height = 64;
-    this.speed = 200;
+export default class Player extends Entity {
+  /**
+   *
+   * @param {Game} game
+   * @param {Input} input
+   */
+  constructor(game, input) {
+    super(game, 20, 400, 64, 64);
 
+    this.speed = 200;
     this.frameX = 1;
     this.frameY = 0;
     this.maxFrame = 3;
     this.fps = 8;
     this.frameTimer = 0;
     this.frameInterval = 1000 / this.fps;
-
     this.facing = 1;
     this.vy = 0;
     this.jumpForce = 350;
     this.onGround = false;
 
-    this.input = new Input();
-
-    this.playerSprite = new Image();
-    this.playerSprite.src = "assets/sprites/player-sheet.png";
-
+    this.sprite.src = "assets/sprites/player-sheet.png";
     this.projectile = new Projectile();
+    this.input = input;
+
     this.shootCoolDown = 0;
     this.shootCoolDownTime = 250;
 
@@ -37,15 +34,6 @@ export default class Player {
       offsetY: 0,
       width: 44,
       height: 64,
-    };
-  }
-
-  getHitbox() {
-    return {
-      x: this.x + this.hitbox.offsetX,
-      y: this.y + this.hitbox.offsetY,
-      width: this.hitbox.width,
-      height: this.hitbox.height,
     };
   }
 
@@ -78,12 +66,12 @@ export default class Player {
   moveHorizontal(delta) {
     let moveX = 0;
 
-    if (this.input.keys["ArrowRight"]) {
+    if (this.input.isRight()) {
       moveX = this.speed * delta;
       this.facing = 1;
     }
 
-    if (this.input.keys["ArrowLeft"]) {
+    if (this.input.isLeft()) {
       moveX = -this.speed * delta;
       this.facing = -1;
     }
@@ -142,18 +130,18 @@ export default class Player {
       this.shootCoolDown -= delta * 1000;
     }
 
-    if (this.input.keys["Space"] && this.onGround) {
+    if (this.input.isJump() && this.onGround) {
       this.jump();
     }
 
     this.moveHorizontal(delta);
     this.moveVertical(delta);
 
-    if (this.input.keys["ArrowRight"] || this.input.keys["ArrowLeft"]) {
+    if (this.input.isRight() || this.input.isLeft()) {
       this.walkAnimation(delta);
     }
 
-    if (this.input.keys["KeyZ"]) {
+    if (this.input.isShoot()) {
       if (this.shootCoolDown <= 0) {
         this.shoot();
         this.shootCoolDown = this.shootCoolDownTime;
@@ -172,7 +160,7 @@ export default class Player {
       ctx.scale(-1, 1);
 
       ctx.drawImage(
-        this.playerSprite,
+        this.sprite,
         this.frameX * 32,
         this.frameY * 32,
         32,
@@ -184,7 +172,7 @@ export default class Player {
       );
     } else {
       ctx.drawImage(
-        this.playerSprite,
+        this.sprite,
         this.frameX * 32,
         this.frameY * 32,
         32,
