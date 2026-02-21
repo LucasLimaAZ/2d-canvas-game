@@ -28,6 +28,7 @@ export default class Entity {
     this.autoMovementType = "none";
     this.reactionTime = 0.6;
     this.reactionTimer = 0;
+    this.playerPerceptionRange = 300;
 
     this.hitbox = {
       offsetX: 0,
@@ -39,7 +40,7 @@ export default class Entity {
   }
 
   destroy() {
-    this.game.entities = this.game.entities.filter((e) => e !== this);
+    this.active = false;
   }
 
   getHitbox() {
@@ -58,26 +59,32 @@ export default class Entity {
   }
 
   update(delta) {
-    if (this.autoMovementType === "towards-player") {
-      this.reactionTimer -= delta;
+    if (
+      !this.playerPerceptionRange ||
+      this.playerPerceptionRange >=
+        this.game.utils.distance(this, this.game.player)
+    ) {
+      if (this.autoMovementType === "towards-player") {
+        this.reactionTimer -= delta;
 
-      if (this.reactionTimer <= 0) {
-        this.reactionTimer = this.reactionTime;
+        if (this.reactionTimer <= 0) {
+          this.reactionTimer = this.reactionTime;
 
-        const playerCenter = this.game.player.x + this.game.player.width / 2;
-        const myCenter = this.x + this.width / 2;
+          const playerCenter = this.game.player.x + this.game.player.width / 2;
+          const myCenter = this.x + this.width / 2;
 
-        if (playerCenter > myCenter) {
-          this.vx = this.speed;
-          this.facing = 1;
-        } else {
-          this.vx = -this.speed;
-          this.facing = -1;
+          if (playerCenter > myCenter) {
+            this.vx = this.speed;
+            this.facing = 1;
+          } else {
+            this.vx = -this.speed;
+            this.facing = -1;
+          }
         }
       }
-    }
 
-    this.x += this.vx * delta;
+      this.x += this.vx * delta;
+    }
   }
 
   draw(ctx) {

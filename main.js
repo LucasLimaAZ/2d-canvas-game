@@ -116,7 +116,9 @@ class Game {
 
     this.player.update(delta);
     this.entities.forEach((entity) => entity.update(delta));
+    this.entities = this.entities.filter((entity) => entity.active);
     this.uiElements.forEach((ui) => ui.update(delta));
+
     this.cameraX = this.player.x - this.width * 0.45;
   }
 
