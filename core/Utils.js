@@ -1,3 +1,5 @@
+import Ui from "../ui/Ui";
+
 export default class Utils {
   /**
    *
@@ -21,25 +23,35 @@ export default class Utils {
   }
 
   gameLoss() {
-    this.placeUiElement("You lost!", "64px Courier New", "white", 275, 275);
     this.placeUiElement(
-      "Press R to restart.",
-      "16px Courier New",
-      "white",
-      350,
-      310,
+      new Ui(this.game, 275, 275, "You lost!", "64px Courier New", "white"),
+    );
+    this.placeUiElement(
+      new Ui(
+        this.game,
+        350,
+        310,
+        "Press R to restart.",
+        "16px Courier New",
+        "white",
+      ),
     );
     this.game.gameState = "lost";
   }
 
   gameWin() {
-    this.placeUiElement("You win!", "64px Courier New", "white", 275, 275);
     this.placeUiElement(
-      "Press R to restart.",
-      "16px Courier New",
-      "white",
-      350,
-      310,
+      new Ui(this.game, 275, 275, "You win!", "64px Courier New", "white"),
+    );
+    this.placeUiElement(
+      new Ui(
+        this.game,
+        350,
+        310,
+        "Press R to restart.",
+        "16px Courier New",
+        "white",
+      ),
     );
     this.game.gameState = "win";
   }
@@ -53,14 +65,9 @@ export default class Utils {
 
   /**
    *
-   * @param {string} text
-   * @param {string} font
-   * @param {string} style
-   * @param {number} x
-   * @param {number} y
+   * @param {Ui} ui
    */
-  placeUiElement(text, font, style, x, y) {
-    const ui = { text, font, style, x, y };
+  placeUiElement(ui) {
     this.game.uiElements.push(ui);
   }
 }

@@ -52,8 +52,4 @@ export default class Projectile extends Entity {
     ctx.fillStyle = "yellow";
     ctx.fillRect(this.x - this.game.cameraX, this.y, this.width, this.height);
   }
-
-  destroy() {
-    this.game.entities = this.game.entities.filter((e) => e !== this);
-  }
 }
