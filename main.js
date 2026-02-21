@@ -6,6 +6,8 @@ import Rock from "./entities/terrain/Rock";
 import Block from "./entities/Block";
 import Input from "./core/Input";
 import WinFlag from "./entities/WinFlag";
+import Ui from "./ui/Ui";
+import EnergyTank from "./entities/items/EnergyTank";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -20,9 +22,10 @@ class Game {
     this.input = new Input();
     this.player = new Player(this, this.input);
 
-    this.floorY = 472;
+    this.floorY = 504;
     this.gravity = 400;
     this.levelTitle = "Zamus-1";
+    this.ammo = 48;
 
     this.entities = [];
     this.uiElements = [];
@@ -36,44 +39,51 @@ class Game {
     const ground = new Ground(this);
     this.entities.push(ground);
 
-    this.utils.placeEntityOnMap(new Eye(this, 600, this.floorY - 15));
-    this.utils.placeEntityOnMap(new Eye(this, 900, this.floorY - 20));
-    this.utils.placeEntityOnMap(new Eye(this, 1200, this.floorY));
-    this.utils.placeEntityOnMap(new Eye(this, 1500, this.floorY + 5));
-    this.utils.placeEntityOnMap(new Eye(this, 1900, this.floorY));
+    this.utils.placeEntityOnMap(new Eye(this, 600, this.floorY - 32));
+    this.utils.placeEntityOnMap(new Eye(this, 900, this.floorY - 32));
+    this.utils.placeEntityOnMap(new Eye(this, 1200, this.floorY - 32));
+    this.utils.placeEntityOnMap(new Eye(this, 1500, this.floorY - 32));
+    this.utils.placeEntityOnMap(new Eye(this, 1900, this.floorY - 32));
 
-    this.utils.placeEntityOnMap(new Rock(this, 100, this.floorY));
-    this.utils.placeEntityOnMap(new Rock(this, 800, this.floorY));
-    this.utils.placeEntityOnMap(new Rock(this, 1000, this.floorY));
+    this.utils.placeEntityOnMap(new Rock(this, 100, this.floorY - 32));
+    this.utils.placeEntityOnMap(new Rock(this, 800, this.floorY - 32));
+    this.utils.placeEntityOnMap(new Rock(this, 1000, this.floorY - 32));
 
     this.utils.placeEntityOnMap(new Block(this, -300, 0, 32, this.height));
     this.utils.placeEntityOnMap(new Block(this, 2000, 0, 32, this.height));
 
-    this.utils.placeEntityOnMap(new WinFlag(this, 1400, this.floorY, 64, 64));
+    this.utils.placeEntityOnMap(new EnergyTank(this, 200, this.floorY));
 
-    this.utils.placeUiElement(
-      `Planet: ${this.levelTitle} | Gravity: ${this.gravity / 10}%`,
-      "16px Courier New",
-      "white",
-      20,
-      20,
+    this.utils.placeEntityOnMap(
+      new WinFlag(this, 1400, this.floorY - 32, 64, 64),
     );
 
     this.utils.placeUiElement(
-      `Arrows: move | Space: jump | Z: shoot`,
-      "16px Courier New",
-      "white",
-      525,
-      20,
+      new Ui(
+        this,
+        20,
+        20,
+        () =>
+          `Planet: ${this.levelTitle} | Gravity: ${this.gravity / 10}% | Energy: ${this.ammo}%`,
+        "16px Courier New",
+        "white",
+      ),
+    );
+
+    this.utils.placeUiElement(
+      new Ui(
+        this,
+        525,
+        20,
+        `Arrows: move | Space: jump | Z: shoot`,
+        "16px Courier New",
+        "white",
+      ),
     );
   }
 
   renderUiElements() {
-    this.uiElements.forEach((ui) => {
-      ctx.fillStyle = ui.style;
-      ctx.font = ui.font;
-      ctx.fillText(ui.text, ui.x, ui.y);
-    });
+    this.uiElements.forEach((ui) => ui.draw(ctx));
   }
 
   renderEntities() {
@@ -85,6 +95,7 @@ class Game {
     this.uiElements = [];
     this.cameraX = 0;
 
+    this.ammo = 100;
     this.player = new Player(this, this.input);
 
     this.initLevel();
@@ -99,6 +110,7 @@ class Game {
 
     this.player.update(delta);
     this.entities.forEach((entity) => entity.update(delta));
+    this.uiElements.forEach((ui) => ui.update(delta));
     this.cameraX = this.player.x - this.width * 0.45;
   }
 

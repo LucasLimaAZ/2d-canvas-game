@@ -21,6 +21,7 @@ export default class Player extends Entity {
     this.vy = 0;
     this.jumpForce = 350;
     this.onGround = false;
+    this.weaponCost = 4;
 
     this.sprite.src = "assets/sprites/player-sheet.png";
     this.projectile = new Projectile();
@@ -44,6 +45,8 @@ export default class Player extends Entity {
   }
 
   shoot() {
+    if (this.game.ammo < 1) return;
+
     const projectile = new Projectile(
       this.game,
       this.x + this.width / 2,
@@ -52,6 +55,7 @@ export default class Player extends Entity {
     );
 
     this.shootSound.play();
+    this.game.ammo -= this.weaponCost;
     this.game.utils.placeEntityOnMap(projectile);
   }
 

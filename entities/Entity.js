@@ -38,6 +38,10 @@ export default class Entity {
     this.visibleHitbox = false;
   }
 
+  destroy() {
+    this.game.entities = this.game.entities.filter((e) => e !== this);
+  }
+
   getHitbox() {
     return {
       x: this.x + this.hitbox.offsetX,
