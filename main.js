@@ -8,6 +8,7 @@ import Input from "./core/Input";
 import WinFlag from "./entities/WinFlag";
 import Ui from "./ui/Ui";
 import EnergyTank from "./entities/items/EnergyTank";
+import Projectile from "./entities/Projectile";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -20,7 +21,7 @@ class Game {
 
     this.utils = new Utils(this);
     this.input = new Input();
-    this.player = new Player(this, this.input);
+    this.player = new Player(this);
 
     this.floorY = 504;
     this.gravity = 400;
@@ -88,6 +89,11 @@ class Game {
 
   renderEntities() {
     this.entities.forEach((entity) => entity.draw(ctx));
+  }
+
+  spawnProjectile(x, y, direction) {
+    const projectile = new Projectile(this, x, y, direction);
+    this.entities.push(projectile);
   }
 
   reset() {

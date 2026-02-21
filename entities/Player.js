@@ -1,13 +1,11 @@
 import Entity from "./Entity.js";
-import Projectile from "./Projectile.js";
 
 export default class Player extends Entity {
   /**
    *
    * @param {Game} game
-   * @param {Input} input
    */
-  constructor(game, input) {
+  constructor(game) {
     super(game, 20, 400, 64, 64);
 
     this.speed = 200;
@@ -24,9 +22,8 @@ export default class Player extends Entity {
     this.weaponCost = 4;
 
     this.sprite.src = "assets/sprites/player-sheet.png";
-    this.projectile = new Projectile();
     this.shootSound = new Audio("assets/sounds/shoot.wav");
-    this.input = input;
+    this.input = this.game.input;
 
     this.shootCoolDown = 0;
     this.shootCoolDownTime = 250;
@@ -42,21 +39,6 @@ export default class Player extends Entity {
   jump() {
     this.vy = -this.jumpForce;
     this.onGround = false;
-  }
-
-  shoot() {
-    if (this.game.ammo < 1) return;
-
-    const projectile = new Projectile(
-      this.game,
-      this.x + this.width / 2,
-      this.y + this.height / 1.5,
-      this.facing,
-    );
-
-    this.shootSound.play();
-    this.game.ammo -= this.weaponCost;
-    this.game.utils.placeEntityOnMap(projectile);
   }
 
   walkAnimation(delta) {
@@ -134,6 +116,16 @@ export default class Player extends Entity {
         }
       }
     });
+  }
+
+  shoot() {
+    this.shootSound.play();
+
+    this.game.spawnProjectile(
+      this.x + this.width / 2,
+      this.y + this.height / 1.5,
+      this.facing,
+    );
   }
 
   update(delta) {
