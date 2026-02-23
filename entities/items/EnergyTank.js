@@ -21,7 +21,7 @@ export default class EnergyTank extends Entity {
 
     if (collision.collision) {
       this.destroy();
-      this.game.ammo = 100;
+      this.game.player.heal(35);
     }
   }
 }

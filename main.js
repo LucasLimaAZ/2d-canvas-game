@@ -26,7 +26,6 @@ class Game {
     this.floorY = 504;
     this.gravity = 400;
     this.levelTitle = "Zamus-1";
-    this.ammo = 48;
 
     this.entities = [];
     this.uiElements = [];
@@ -53,7 +52,7 @@ class Game {
     this.utils.placeEntityOnMap(new Block(this, -300, 0, 32, this.height));
     this.utils.placeEntityOnMap(new Block(this, 2000, 0, 32, this.height));
 
-    this.utils.placeEntityOnMap(new EnergyTank(this, 200, this.floorY));
+    this.utils.placeEntityOnMap(new EnergyTank(this, 900, this.floorY));
 
     this.utils.placeEntityOnMap(
       new WinFlag(this, 1400, this.floorY - 32, 64, 64),
@@ -65,7 +64,7 @@ class Game {
         20,
         20,
         () =>
-          `Planet: ${this.levelTitle} | Gravity: ${this.gravity / 10}% | Energy: ${this.ammo}%`,
+          `Planet: ${this.levelTitle} | Gravity: ${this.gravity / 10}% | Energy: ${this.player.hp}%`,
         "16px Courier New",
         "white",
       ),
@@ -101,7 +100,6 @@ class Game {
     this.uiElements = [];
     this.cameraX = 0;
 
-    this.ammo = 100;
     this.player = new Player(this, this.input);
 
     this.initLevel();

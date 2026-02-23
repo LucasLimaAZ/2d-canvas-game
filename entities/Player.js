@@ -8,6 +8,7 @@ export default class Player extends Entity {
   constructor(game) {
     super(game, 20, 400, 64, 64);
 
+    this.hp = 100;
     this.speed = 200;
     this.frameX = 1;
     this.frameY = 0;
@@ -19,7 +20,7 @@ export default class Player extends Entity {
     this.vy = 0;
     this.jumpForce = 350;
     this.onGround = false;
-    this.weaponCost = 4;
+    this.weaponCost = 0;
 
     this.sprite.src = "assets/sprites/player-sheet.png";
     this.shootSound = new Audio("assets/sounds/shoot.wav");
@@ -59,10 +60,23 @@ export default class Player extends Entity {
     );
 
     if (collision.collision) {
-      if (entity.hostile) this.game.utils.gameLoss();
+      if (entity.hostile) this.takeDamage(entity);
 
       return entity;
     }
+  }
+
+  takeDamage(entity) {
+    this.blinkEntity();
+    this.hp -= entity.damage;
+    if (this.hp <= 0) {
+      this.game.utils.gameLoss();
+    }
+  }
+
+  heal(amount) {
+    this.hp += amount;
+    if (this.hp > 100) this.hp = 100;
   }
 
   moveHorizontal(delta) {
