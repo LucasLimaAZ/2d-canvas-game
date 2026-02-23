@@ -67,7 +67,6 @@ export default class Player extends Entity {
   }
 
   takeDamage(entity) {
-    this.blinkEntity();
     this.hp -= entity.damage;
     if (this.hp <= 0) {
       this.game.utils.gameLoss();

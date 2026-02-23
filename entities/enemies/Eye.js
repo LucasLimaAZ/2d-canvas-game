@@ -13,8 +13,8 @@ export default class Eye extends Entity {
     this.destructible = true;
     this.hostile = true;
     this.autoMovementType = "towards-player";
-    this.speed = 250;
-    this.damage = 1;
+    this.speed = 450;
+    this.damage = 3;
     this.hitbox = {
       offsetX: 10,
       offsetY: 8,

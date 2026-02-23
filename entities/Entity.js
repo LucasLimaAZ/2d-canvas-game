@@ -28,9 +28,7 @@ export default class Entity {
     this.autoMovementType = "none";
     this.reactionTime = 0.6;
     this.reactionTimer = 0;
-    this.playerPerceptionRange = 300;
-    this.blinkTimer = 0;
-    this.blinkPhase = 0;
+    this.playerPerceptionRange = 600;
 
     this.hitbox = {
       offsetX: 0,
@@ -61,11 +59,6 @@ export default class Entity {
   }
 
   update(delta) {
-    if (this.blinkTimer > 0) {
-      this.blinkTimer -= delta;
-      this.blinkPhase += delta * 20;
-    }
-
     if (
       !this.playerPerceptionRange ||
       this.playerPerceptionRange >=
@@ -94,19 +87,11 @@ export default class Entity {
     }
   }
 
-  blinkEntity(duration = 0.5) {
-    this.blinkTimer = duration;
-  }
-
   draw(ctx) {
     const screenX = Math.floor(this.x - this.game.cameraX);
     if (this.visibleHitbox) this.showHitbox(ctx);
 
     ctx.save();
-
-    if (this.blinkTimer > 0) {
-      ctx.globalAlpha = Math.sin(this.blinkPhase) > 0 ? 0.3 : 1;
-    }
 
     if (this.facing === 1) {
       ctx.scale(-1, 1);

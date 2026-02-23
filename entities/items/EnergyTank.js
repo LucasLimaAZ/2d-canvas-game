@@ -11,6 +11,7 @@ export default class EnergyTank extends Entity {
       height: 32,
     };
     this.sprite.src = "assets/sprites/energy-tank.png";
+    this.sound = new Audio("assets/sounds/gas.wav");
   }
 
   update(delta) {
@@ -22,6 +23,7 @@ export default class EnergyTank extends Entity {
     if (collision.collision) {
       this.destroy();
       this.game.player.heal(35);
+      this.sound.play();
     }
   }
 }
